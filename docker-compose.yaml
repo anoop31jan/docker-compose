@@ -1,0 +1,53 @@
+version: '3'
+
+services:
+  eureka-server:
+    image: discovery-service:0.0.1-SNAPSHOT
+    ports:
+      - 8761:8761
+    networks:
+      - cts-iiht
+    
+ 
+  api-gateway:
+    image: api-gateway:0.0.1-SNAPSHOT
+    ports:
+      - 9090:9090
+    environment:
+      - EUREKA_SERVER=http://eureka-server:8761/eureka
+    depends_on:
+         - eureka-server
+    networks:
+      - cts-iiht
+
+
+
+  member-service:
+    image: member-service:0.0.1-SNAPSHOT
+    ports:
+      - 8081:8081
+    environment:
+     - EUREKA_SERVER=http://eureka-server:8761/eureka
+     - JAVA_TOOL_OPTIONS=-Xms128m -Xmx256m
+    depends_on:
+         - eureka-server
+    networks:
+      - cts-iiht
+
+
+
+  task-service:
+    image: task-service:0.0.1-SNAPSHOT
+    ports:
+      - 8083:8083
+    environment:
+     - EUREKA_SERVER=http://eureka-server:8761/eureka
+     - JAVA_TOOL_OPTIONS=-Xms128m -Xmx256m
+    depends_on:
+         - eureka-server
+    networks:
+      - cts-iiht     
+   
+networks:
+  cts-iiht:
+    driver: bridge
